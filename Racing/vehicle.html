@@ -284,6 +284,51 @@
 						case 40: // back
 							input.power = false;
 							break;
+
+            case 82: // back
+              var temp_position = vehicle.mesh.position;
+            	scene.remove(vehicle.wheels);
+            	scene.remove(vehicle);
+
+              var mesh = new Physijs.BoxMesh(
+                car,
+                new THREE.MeshFaceMaterial( car_materials )
+              );
+              mesh.position.y = 2;
+              mesh.position.x = temp_position.x;
+              mesh.position.z = temp_position.z;
+              mesh.castShadow = mesh.receiveShadow = true;
+
+              vehicle = new Physijs.Vehicle(mesh, new Physijs.VehicleTuning(
+                10.88,
+                1.83,
+                0.28,
+                500,
+                10.5,
+                6000
+              ));
+              scene.add( vehicle );
+
+              var wheel_material = new THREE.MeshFaceMaterial( wheel_materials );
+
+              for ( var i = 0; i < 4; i++ ) {
+                vehicle.addWheel(
+                  wheel,
+                  wheel_material,
+                  new THREE.Vector3(
+                    i % 2 === 0 ? -1.6 : 1.6,
+                    -1,
+                    i < 2 ? 3.3 : -3.2
+                  ),
+                  new THREE.Vector3( 0, -1, 0 ),
+                  new THREE.Vector3( -1, 0, 0 ),
+                  0.5,
+                  0.7,
+                  i < 2 ? false : true
+                );
+              }
+              break;
+
 					}
 				});
 				document.addEventListener('keyup', function( ev ) {
@@ -315,7 +360,8 @@
 	render = function() {
 		requestAnimationFrame( render );
 		if ( vehicle ) {
-			camera.position.copy( vehicle.mesh.position ).add( new THREE.Vector3( 40, 25, 40 ) );
+			camera.position.copy( vehicle.mesh.position )
+				.add( new THREE.Vector3( 0, 20, -40 ) );
 			camera.lookAt( vehicle.mesh.position );
 
 			light.target.position.copy( vehicle.mesh.position );
