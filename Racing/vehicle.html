@@ -3,7 +3,7 @@
 <html>
 
 <head>
-	<title>Rigid body - Physijs</title>
+	<title>Racing game</title>
 
 	<link rel="stylesheet" type="text/css" href="css/styles.css" />
 
@@ -20,7 +20,7 @@
         Physijs.scripts.ammo = 'Racing/js/ammo.js';
 
 	var initScene, render,
-		building1material,  building2material,
+		building1material,  building2material, wallRock, wallWood,
 		renderer, render_stats, physics_stats, scene, ground, light, camera,
 			vehicle_body, vehicle, loader;
 	
@@ -95,7 +95,8 @@
 		
 		// Light
 		light = new THREE.DirectionalLight( 0xFFFFFF );
-		light.position.set( 20, 20, -55 );
+		light.position.set( -30, 50, - 35 );
+		light.intensity = 1;
 		light.target.position.copy( scene.position );
 		light.castShadow = true;
 		light.shadowCameraLeft = -150;
@@ -130,6 +131,18 @@
         );
 
 
+        wallRock = Physijs.createMaterial(
+            new THREE.MeshLambertMaterial({ map: loader.load( 'images/wall.jpg' ) }),
+            .4, // low friction
+            .6 // high restitution
+        );
+
+
+        wallWood = Physijs.createMaterial(
+            new THREE.MeshLambertMaterial({ map: loader.load( 'images/wooden.jpg' ) }),
+            .4, // low friction
+            .6 // high restitution
+        );
 
 
 
@@ -167,7 +180,7 @@
             ['rocks','rocks','road','rocks','turn4','turn3','rocks','rocks','rocks','road','rocks','rocks'],
             ['rocks','rocks','turn1','road2','turn3','rocks','rocks','rocks','rocks','road','rocks','rocks'],
             ['rocks','rocks','rocks','rocks','rocks','rocks','rocks','rocks','turn4','turn3','rocks','rocks'],
-            ['rocks','rocks','turn1','road','turn2','rocks','rocks','rocks','road','rocks','rocks','rocks'],
+            ['road2','road2','road2','road2','turn2','rocks','rocks','rocks','road','rocks','rocks','rocks'],
             ['rocks','rocks','rocks','rocks','turn1','road2','road2','road2','turn3','rocks','rocks','rocks'],
             ['rocks','rocks','rocks','rocks','rocks','rocks','rocks','rocks','rocks','rocks','rocks','rocks'],
         ];
@@ -199,24 +212,97 @@
             }
         }
 
-//		for ( i = 0; i < 10; i++ ) {
-//            var height = Math.random()*30 + 20
-//			var building = new Physijs.BoxMesh(
-//				new THREE.BoxGeometry( 20, height, 20 )
-//			);
-//			if(i%2===0){
-//			    building.material = building1material;
-//			}else {
-//			    building.material = building2material;
-//			}
-//            building.castShadow = building.receiveShadow = true;
-//            building.position.set(
-//				Math.random()*250 - 125,
-//                height/2 + 0.2,
-//                Math.random()*250 - 125
-//			);
-//			scene.add(building)
-//		}
+        //building function
+		//h - 0,1,2,3,4 multiply random for height
+		//x,y - coordinates
+		//type - 1/2 type of texture
+		function setBuilding(h,x,y,type) {
+
+            var height = Math.random()*h*10 + 30;
+            var building = new Physijs.BoxMesh(
+                new THREE.BoxGeometry( 40, height, 40 )
+            );
+            if(type%2===0){
+                building.material = building1material;
+            }else {
+                building.material = building2material;
+            }
+            building.castShadow = building.receiveShadow = true;
+            building.position.set(
+                x,
+                height/2 + 0.2,
+                y
+            );
+            scene.add(building)
+        };
+
+
+
+
+		//all buildings
+
+		setBuilding(0,20,140,2);
+		setBuilding(0,60,140,1);
+		setBuilding(5,100,140,2);
+
+        setBuilding(5,180,140,1);
+        setBuilding(2,180,180,1);
+        setBuilding(0,140,220,2);
+
+        setBuilding(3,220,300,1);
+
+        setBuilding(2,260,180,2);
+        setBuilding(2,300,180,1);
+        setBuilding(2,340,180,2);
+
+        setBuilding(2,420,140,1);
+        setBuilding(2,420,180,1);
+        setBuilding(2,420,220,2);
+        setBuilding(2,420,260,2);
+        setBuilding(2,420,300,1);
+        setBuilding(2,420,340,2);
+
+        setBuilding(2,140,420,1);
+        setBuilding(2,180,460,1);
+        setBuilding(2,220,460,2);
+        setBuilding(2,260,460,2);
+        setBuilding(2,300,460,1);
+        setBuilding(2,340,460,2);
+
+
+        function setWall(l, w, x, y, type) {
+
+            var wall = new Physijs.BoxMesh(
+                new THREE.BoxGeometry( l, 6, w )
+            );
+            wall.mass = 6000;
+            if(type%2===0){
+                wall.material = wallWood;
+            }else {
+                wall.material = wallRock;
+            }
+            wall.castShadow = wall.receiveShadow = true;
+            wall.position.set(
+                x,
+                3.1,
+                y
+            );
+            scene.add(wall);
+        }
+
+        setWall(0.5,80,40.2,40,1);
+
+        setWall(0.5,40,160.2,100,2);
+
+        setWall(0.5,40,120.2,260,1);
+
+        setWall(0.5,80,240.3,240,2);
+
+        setWall(0.5,120,360.2,260,1);
+
+        setWall(120,0.5,140,320.2,2);
+
+
 
 
 
@@ -361,13 +447,14 @@
 		requestAnimationFrame( render );
 		if ( vehicle ) {
 			camera.position.copy( vehicle.mesh.position )
-				.add( new THREE.Vector3( 0, 20, -40 ) );
+				.add( new THREE.Vector3( 0, 90, -40 ) );
 			camera.lookAt( vehicle.mesh.position );
 
-			light.target.position.copy( vehicle.mesh.position );
-			light.position.addVectors( light.target.position, new THREE.Vector3( 20, 20, -15 ) );
+
+//			light.target.position.copy( vehicle.mesh.position );
+//			light.position.addVectors( light.target.position, new THREE.Vector3( 20, 20, -15 ) );
 		}
-		renderer.render( scene, camera );
+		renderer.render( scene, camera);
 		render_stats.update();
 	};
 
