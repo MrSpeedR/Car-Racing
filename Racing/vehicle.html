@@ -323,13 +323,13 @@
 		var json_loader = new THREE.JSONLoader();
 
 		json_loader.load( "models/mustang.js", function( car, car_materials ) {
-			json_loader.load( "models/mustang_wheel.js", function( wheel, wheel_materials ) {
+		    json_loader.load( "models/mustang_wheel.js", function( wheel, wheel_materials ) {
 				var mesh = new Physijs.BoxMesh(
 					car,
 					new THREE.MeshFaceMaterial( car_materials )
 				);
 				mesh.position.y = 2;
-				mesh.position.x = 10;
+				mesh.position.x = 20;
 				mesh.position.z = 10;
 				mesh.castShadow = mesh.receiveShadow = true;
 
@@ -385,8 +385,9 @@
 							input.power = false;
 							break;
 
-            case 82: // back
-              var temp_position = vehicle.mesh.position;
+            case 82: // resp
+				reset();
+            	stopwatch=false;
             	scene.remove(vehicle.wheels);
             	scene.remove(vehicle);
 
@@ -395,8 +396,8 @@
                 new THREE.MeshFaceMaterial( car_materials )
               );
               mesh.position.y = 2;
-              mesh.position.x = temp_position.x;
-              mesh.position.z = temp_position.z;
+              mesh.position.x = 20;
+              mesh.position.z = 10;
               mesh.castShadow = mesh.receiveShadow = true;
 
               vehicle = new Physijs.Vehicle(mesh, new Physijs.VehicleTuning(
@@ -473,9 +474,6 @@
 				.add( new THREE.Vector3( 0, 90, -40 ) );
 			camera.lookAt( vehicle.mesh.position );
 
-
-//			light.target.position.copy( vehicle.mesh.position );
-//			light.position.addVectors( light.target.position, new THREE.Vector3( 20, 20, -15 ) );
 		}
 		renderer.render( scene, camera);
 		render_stats.update();
