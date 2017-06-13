@@ -56,7 +56,7 @@
 			'update',
 			function() {
 
-				if ( input && vehicle ) {
+				if ( input && index ) {
 					if ( input.direction !== null ) {
 						input.steering += input.direction / 50;
 						if ( input.steering < -.6 ) input.steering = -.6;
@@ -70,17 +70,17 @@
                             input.steering=-Math.abs(input.steering+0.01);
 						}
 					}
-                    vehicle.setSteering( input.steering, 0 );
-					vehicle.setSteering( input.steering, 1 );
+                    index.setSteering( input.steering, 0 );
+					index.setSteering( input.steering, 1 );
 
 					if ( input.power === true ) {
-						vehicle.applyEngineForce( 300 );
+						index.applyEngineForce( 300 );
 					} else if ( input.power === false ) {
-						vehicle.applyEngineForce(-100)
+						index.applyEngineForce(-100)
 					} else if ( input.power === null){
-                        vehicle.applyEngineForce(0);
-                        vehicle.setBrake(5, 2);
-                        vehicle.setBrake(5, 3);
+                        index.applyEngineForce(0);
+                        index.setBrake(5, 2);
+                        index.setBrake(5, 3);
 
 
 					}
@@ -333,7 +333,7 @@
 				mesh.position.z = 10;
 				mesh.castShadow = mesh.receiveShadow = true;
 
-				vehicle = new Physijs.Vehicle(mesh, new Physijs.VehicleTuning(
+				index = new Physijs.Vehicle(mesh, new Physijs.VehicleTuning(
 					10.88,
 					1.83,
 					0.28,
@@ -341,12 +341,12 @@
 					10.5,
 					6000
 				));
-				scene.add( vehicle );
+				scene.add( index );
 
 				var wheel_material = new THREE.MeshFaceMaterial( wheel_materials );
 
 				for ( var i = 0; i < 4; i++ ) {
-					vehicle.addWheel(
+					index.addWheel(
 						wheel,
 						wheel_material,
 						new THREE.Vector3(
@@ -388,8 +388,8 @@
             case 82: // resp
 				reset();
             	stopwatch=false;
-            	scene.remove(vehicle.wheels);
-            	scene.remove(vehicle);
+            	scene.remove(index.wheels);
+            	scene.remove(index);
 
               var mesh = new Physijs.BoxMesh(
                 car,
@@ -400,7 +400,7 @@
               mesh.position.z = 10;
               mesh.castShadow = mesh.receiveShadow = true;
 
-              vehicle = new Physijs.Vehicle(mesh, new Physijs.VehicleTuning(
+              index = new Physijs.Vehicle(mesh, new Physijs.VehicleTuning(
                 10.88,
                 1.83,
                 0.28,
@@ -408,12 +408,12 @@
                 10.5,
                 6000
               ));
-              scene.add( vehicle );
+              scene.add( index );
 
               var wheel_material = new THREE.MeshFaceMaterial( wheel_materials );
 
               for ( var i = 0; i < 4; i++ ) {
-                vehicle.addWheel(
+                index.addWheel(
                   wheel,
                   wheel_material,
                   new THREE.Vector3(
@@ -460,19 +460,19 @@
 	
 	render = function() {
 		requestAnimationFrame( render );
-		if (!stopwatch && vehicle.mesh.position.z>40){
+		if (!stopwatch && index.mesh.position.z>40){
 		    start();
 		    stopwatch=true;
 		}
-		if (stopwatch && vehicle.mesh.position.x<40 && vehicle.mesh.position.z>360){
+		if (stopwatch && index.mesh.position.x<40 && index.mesh.position.z>360){
 		    stop();
 		    stopwatch = false;
 		}
 
-		if ( vehicle ) {
-			camera.position.copy( vehicle.mesh.position )
+		if ( index ) {
+			camera.position.copy( index.mesh.position )
 				.add( new THREE.Vector3( 0, 90, -40 ) );
-			camera.lookAt( vehicle.mesh.position );
+			camera.lookAt( index.mesh.position );
 
 		}
 		renderer.render( scene, camera);
